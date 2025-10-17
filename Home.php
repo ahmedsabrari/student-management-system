@@ -7,12 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234361ee'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>"> -->
-    <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>"> -->
-    <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234361ee'><path d='M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z'/></svg>"> -->
-    <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234361ee'><path d='M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z'/></svg>"> -->
     <link rel="shortcut icon" href="./img/5850276.png" type="image/x-icon">
-
     <title>Student Management System</title>
     <style>
         :root {
@@ -309,6 +304,24 @@
             font-size: 20px;
             margin-bottom: 10px;
         }
+
+        .error-message {
+            background: var(--danger);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success-message {
+            background: var(--success);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
         
         /* Responsive Design */
         @media (max-width: 1024px) {
@@ -366,7 +379,104 @@
     </style>
 </head>
 <body>
+    <?php
+    // Enable error reporting
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+
+    // Database configuration
+    $host = 'localhost';
+    $user = 'root';
+    $pass = '';
+    $db = 'student-management-system';
+    $port = 3308;
+    
+    // Initialize variables
+    $conn = null;
+    $res = null;
+    $message = '';
+    $message_type = '';
+    $id = '';
+    $name = '';
+    $address = '';
+
+    try {
+        // Create connection
+        $conn = new mysqli($host, $user, $pass, $db, $port);
+        
+        // Check connection
+        if ($conn->connect_error) {
+            throw new Exception("Connection failed: " . $conn->connect_error);
+        }
+        
+        // Set charset
+        $conn->set_charset("utf8mb4");
+
+        // Get form data
+        if (isset($_POST['id'])) {
+            $id = trim($_POST['id']);
+        }
+        if (isset($_POST['name'])) {
+            $name = trim($_POST['name']);
+        }
+        if (isset($_POST['address'])) {
+            $address = trim($_POST['address']);
+        }
+
+        // Handle form submissions
+        if (isset($_POST['add']) && !empty($id) && !empty($name)) {
+            // Use prepared statement to prevent SQL injection
+            $stmt = $conn->prepare("INSERT INTO student (id, name, address) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $id, $name, $address);
+            
+            if ($stmt->execute()) {
+                $message = "Student added successfully!";
+                $message_type = "success";
+                // Clear form
+                $id = $name = $address = '';
+            } else {
+                throw new Exception("Error adding student: " . $stmt->error);
+            }
+            $stmt->close();
+        }
+
+        if (isset($_POST['del']) && !empty($name)) {
+            // Use prepared statement to prevent SQL injection
+            $stmt = $conn->prepare("DELETE FROM student WHERE name = ?");
+            $stmt->bind_param("s", $name);
+            
+            if ($stmt->execute()) {
+                $message = "Student deleted successfully!";
+                $message_type = "success";
+                // Clear form
+                $name = '';
+            } else {
+                throw new Exception("Error deleting student: " . $stmt->error);
+            }
+            $stmt->close();
+        }
+
+        // Fetch all students
+        $res = $conn->query("SELECT * FROM student ORDER BY id");
+        if (!$res) {
+            throw new Exception("Error fetching students: " . $conn->error);
+        }
+
+        $total_students = $res->num_rows;
+
+    } catch (Exception $e) {
+        $message = "Database Error: " . $e->getMessage();
+        $message_type = "error";
+        $total_students = 0;
+    }
+    ?>
     <div class="container">
+        <?php if (!empty($message)): ?>
+            <div class="<?php echo $message_type === 'error' ? 'error-message' : 'success-message'; ?>">
+                <?php echo htmlspecialchars($message); ?>
+            </div>
+        <?php endif; ?>
+
         <div class="dashboard">
             <!-- Control Panel -->
             <aside class="sidebar">
@@ -379,17 +489,17 @@
                 <form action="" method="post">
                     <div class="form-group">
                         <label for="id"><i class="fas fa-id-card"></i> Student ID</label>
-                        <input type="text" name="id" id="id" class="form-control" placeholder="Enter student ID">
+                        <input type="text" name="id" id="id" class="form-control" placeholder="Enter student ID" value="<?php echo htmlspecialchars($id); ?>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="name"><i class="fas fa-user"></i> Student Name</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter student name">
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter student name" value="<?php echo htmlspecialchars($name); ?>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="address"><i class="fas fa-map-marker-alt"></i> Student Address</label>
-                        <input type="text" name="address" id="address" class="form-control" placeholder="Enter student address">
+                        <input type="text" name="address" id="address" class="form-control" placeholder="Enter student address" value="<?php echo htmlspecialchars($address); ?>">
                     </div>
                     
                     <div class="btn-group">
@@ -409,12 +519,12 @@
                     <h2>Student Records</h2>
                     <div class="stats">
                         <div class="stat-card">
-                            <div class="stat-number">127</div>
+                            <div class="stat-number"><?php echo $total_students; ?></div>
                             <div class="stat-label">Total Students</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">12</div>
-                            <div class="stat-label">New This Month</div>
+                            <div class="stat-number"><?php echo $total_students; ?></div>
+                            <div class="stat-label">In System</div>
                         </div>
                     </div>
                 </div>
@@ -430,33 +540,29 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>ST2023001</td>
-                                <td>John Smith</td>
-                                <td>123 Main Street, New York, NY</td>
-                                <td class="actions">
-                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>ST2023002</td>
-                                <td>Emily Johnson</td>
-                                <td>456 Oak Avenue, Los Angeles, CA</td>
-                                <td class="actions">
-                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>ST2023003</td>
-                                <td>Michael Brown</td>
-                                <td>789 Pine Road, Chicago, IL</td>
-                                <td class="actions">
-                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
+                            <?php 
+                            if (isset($res) && $res && $res->num_rows > 0) {
+                                while($row = $res->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>".htmlspecialchars($row['id'])."</td>";
+                                    echo "<td>".htmlspecialchars($row['name'])."</td>";
+                                    echo "<td>".htmlspecialchars($row['address'])."</td>";
+                                    echo '<td class="actions">
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                          </td>';
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo '<tr>
+                                        <td colspan="4" class="empty-state">
+                                            <i class="fas fa-users"></i>
+                                            <h3>No Students Found</h3>
+                                            <p>Add some students to get started</p>
+                                        </td>
+                                      </tr>';
+                            }
+                            ?>
                         </tbody>
                     </table>
                 </div>
@@ -475,8 +581,15 @@
                 this.style.transform = 'translateY(0)';
             });
         });
+
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.error-message, .success-message');
+            messages.forEach(msg => {
+                msg.style.display = 'none';
+            });
+        }, 5000);
         
-        // Sample data for demonstration
         console.log('Student Management System Loaded');
     </script>
 </body>
