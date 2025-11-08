@@ -1,0 +1,103 @@
+# ===================================
+# System Files
+# ملفات النظام
+# ===================================
+
+.DS_Store
+Thumbs.db
+
+# ===================================
+# Environment & Config
+# البيئة والإعدادات
+# ===================================
+
+.env
+.env.*
+!.env.example
+.env.local
+.env.backup
+
+# ===================================
+# Logs & Cache
+# السجلات والذاكرة المؤقتة
+# ===================================
+
+/storage/logs/.log
+/storage/cache/
+/storage/temp/
+/storage/backups/database/.sql
+/storage/backups/files/
+/storage/exports/
+!/storage/*/.gitkeep
+
+# ===================================
+# Vendor & Dependencies
+# الموردون والتبعيات
+# ===================================
+
+/vendor/
+
+# ===================================
+# IDE & Editor
+# بيئات التطوير والمحررات
+# ===================================
+
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ===================================
+# OS Specific
+# ملفات نظام التشغيل
+# ===================================
+
+*.swp
+*.bak
+*.tmp
+
+# ===================================
+# Uploads
+# الملفات المرفوعة
+# ===================================
+
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# ===================================
+# Node / Frontend (If used)
+# نود / الواجهة الأمامية (إذا تم استخدامها)
+# ===================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ===================================
+# Tests & Coverage
+# الاختبارات والتغطية
+# ===================================
+
+/coverage/
+phpunit.xml
+.phpunit.result.cache
+
+# ===================================
+# Composer & Autoload
+# كومبوزر والتحميل التلقائي
+# ===================================
+
+composer.lock
+composer.phar
+/vendor/bin/
+
+# ===================================
+# Build artifacts (If applicable)
+# مخرجات البناء (إذا كان منطبقًا)
+# ===================================
+
+/build/
+/dist/

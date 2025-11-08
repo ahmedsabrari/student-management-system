@@ -1,0 +1,61 @@
+{
+    "name": "ahmedsabrari/student-management-system",
+    "description": "A comprehensive student management system with role-based access control, attendance tracking, grade management, and academic analytics",
+    "type": "project",
+    "keywords": ["student", "management", "education", "academic", "school", "university"],
+    "homepage": "https://github.com/ahmedsabrari/student-management-system.git",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ahmedsabrari",
+            "email": "sabrari.ahmed0@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "vlucas/phpdotenv": "^5.5", 
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0", 
+        "fakerphp/faker": "^1.21"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/" 
+        },
+        "files": [
+            "app/Helpers/auth.php",
+            "app/Helpers/csrf.php", 
+            "app/Helpers/date.php",
+            "app/Helpers/debug.php",
+            "app/Helpers/flash.php",
+            "app/Helpers/form.php",
+            "app/Helpers/response.php", 
+            "app/Helpers/utils.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "migrate": "php bin/migrate.php", 
+        "seed": "php bin/seed.php" 
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "process-timeout": 2000,
+        "platform-check": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,42 @@
+# Enable the rewrite engine (required for the rules below)
+# تفعيل محرك إعادة الكتابة (مطلوب للقواعد أدناه)
+RewriteEngine On
+
+# Set the base path if your project is in a subdirectory (e.g., /my_project/)
+# تعيين المسار الأساسي إذا كان مشروعك في مجلد فرعي
+# Remove the '#' if needed and change '/' to your subdirectory path like '/subdir/'
+# أزل '#' إذا لزم الأمر وغيّر '/' إلى مسار المجلد الفرعي الخاص بك مثل '/subdir/'
+# RewriteBase /
+
+# Prevent directory listing
+# منع عرض محتويات المجلد
+Options -Indexes
+
+# Block access to potentially sensitive files if accidentally placed in public
+# منع الوصول إلى ملفات حساسة محتملة إذا تم وضعها عن طريق الخطأ في public
+<FilesMatch "(\.env|\.log|config\.php)">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Redirect Trailing Slashes If Not A Folder...
+# إعادة توجيه الشرطة المائلة الزائدة إذا لم يكن مجلدًا...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
+# Handle Front Controller...
+# التعامل مع Front Controller...
+# Condition 1: If the request is NOT for an existing file
+# الشرط 1: إذا لم يكن الطلب لملف موجود
+RewriteCond %{REQUEST_FILENAME} !-f
+# Condition 2: If the request is NOT for an existing directory
+# الشرط 2: إذا لم يكن الطلب لمجلد موجود
+RewriteCond %{REQUEST_FILENAME} !-d
+# Rule: Rewrite all other requests to index.php
+# القاعدة: إعادة كتابة جميع الطلبات الأخرى إلى index.php
+# [L] means "Last rule" - stop processing rules if this one matches
+# [L] تعني "القاعدة الأخيرة" - توقف عن معالجة القواعد إذا تطابقت هذه القاعدة
+# [QSA] means "Query String Append" - append any existing query string to the rewritten URL
+# [QSA] تعني "إلحاق سلسلة الاستعلام" - ألحق أي سلسلة استعلام موجودة بعنوان URL المعاد كتابته
+RewriteRule ^ index.php [L,QSA]
