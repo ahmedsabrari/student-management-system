@@ -1,0 +1,14 @@
+[2025-11-08 23:39:08] Uncaught Exception: "Error rendering view file C:\Users\dell\Desktop\student-management-system/app/Views/layouts\main.php: include(C:\Users\dell\Desktop\student-management-system\app\Views\layouts/../partials/_sidebar.php): Failed to open stream: No such file or directory" in C:\Users\dell\Desktop\student-management-system\app\Core\View.php:82
+Stack trace:
+#0 C:\Users\dell\Desktop\student-management-system\app\Core\View.php(51): App\Core\View->renderViewFile('C:\\Users\\dell\\D...', Array)
+#1 C:\Users\dell\Desktop\student-management-system\app\Core\Controller.php(45): App\Core\View->render('dashboard/index', Array, 'main')
+#2 C:\Users\dell\Desktop\student-management-system\app\Controllers\DashboardController.php(45): App\Core\Controller->render('dashboard/index', Array, 'main')
+#3 C:\Users\dell\Desktop\student-management-system\app\Config\routes.php(78): App\Controllers\DashboardController->index()
+#4 [internal function]: App\Core\App->{closure}()
+#5 C:\Users\dell\Desktop\student-management-system\app\Core\Router.php(208): call_user_func_array(Object(Closure), Array)
+#6 C:\Users\dell\Desktop\student-management-system\app\Core\Router.php(169): App\Core\Router->executeCallback(Object(Closure), Array)
+#7 C:\Users\dell\Desktop\student-management-system\app\Core\App.php(78): App\Core\Router->dispatch()
+#8 C:\Users\dell\Desktop\student-management-system\public\index.php(75): App\Core\App->run()
+#9 {main}
+---
+[08-Nov-2025 23:39:08 Africa/Casablanca] FATAL ERROR: Error rendering view file C:\Users\dell\Desktop\student-management-system/app/Views/layouts\main.php: include(C:\Users\dell\Desktop\student-management-system\app\Views\layouts/../partials/_sidebar.php): Failed to open stream: No such file or directory on line 82 in C:\Users\dell\Desktop\student-management-system\app\Core\View.php
