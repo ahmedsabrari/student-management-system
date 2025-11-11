@@ -112,4 +112,43 @@ document.addEventListener("DOMContentLoaded", function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
+
+    // ... (Theme Toggle logic - already exists) ...
+    // ... (Sidebar Toggle logic - already exists) ...
+    // ... (Confirm Modal logic - already exists) ...
+    
+    // --- 5. Form Submit Loading State ---
+    // (إضافة حالة التحميل عند إرسال النماذج)
+    const formsToTrack = document.querySelectorAll('form[method="POST"]');
+    
+    formsToTrack.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            // Find the submit button(s) within this specific form
+            // (العثور على أزرار الإرسال داخل هذا النموذج المحدد)
+            const submitButtons = form.querySelectorAll('button[type="submit"]');
+            
+            submitButtons.forEach(button => {
+                // Disable the button
+                // (تعطيل الزر)
+                button.disabled = true;
+                
+                // Change text or add spinner
+                // (تغيير النص أو إضافة مؤشر دوران)
+                
+                // Store original text
+                const originalText = button.innerHTML;
+                button.dataset.originalText = originalText;
+                
+                // Add spinner (Bootstrap 5 spinner)
+                button.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden">Loading...</span>
+                `;
+            });
+            
+            // Note: If validation fails and you re-render the page,
+            // the button will be re-enabled automatically.
+        });
+    });
+
 });

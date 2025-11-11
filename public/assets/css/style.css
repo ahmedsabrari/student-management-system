@@ -201,3 +201,127 @@ body {
   background-color: var(--bg);
   transition: background-color 0.3s ease;
 }
+
+/* * 5. AUTH LAYOUT STYLES
+ * (تنسيقات قالب المصادقة)
+ */
+.auth-layout {
+  background-color: var(--bg); /* Use card bg for the form side */
+}
+
+/* Illustration column (left side) */
+.auth-illustration-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-light);
+  /* Placeholder gradient, replace with image if needed */
+  background-image: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: #ffffff;
+  padding: 2rem;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+.auth-illustration-content {
+  max-width: 450px;
+}
+.auth-illustration-content .material-icons {
+  font-size: 80px;
+  opacity: 0.8;
+}
+.auth-illustration-content h2 {
+  font-weight: 600;
+  font-size: 1.75rem;
+  margin-top: 1rem;
+}
+
+/* Form card (right side) */
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  background-color: var(--bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem; /* (8px) */
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+[data-theme="dark"] .auth-card {
+   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.auth-brand {
+    color: var(--color-primary);
+}
+.auth-brand .material-icons {
+    font-size: 3rem; /* 48px */
+}
+.auth-brand h2 {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.app-footer-auth {
+  width: 100%;
+  max-width: 450px;
+}
+
+/* * 6. FORM STYLING (Modern Bootstrap Overrides)
+ * (تنسيقات النماذج الحديثة)
+ */
+.form-control,
+.form-select {
+    min-height: 48px; /* Taller inputs */
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--border-color);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg);
+    color: var(--color-text);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2); /* (primary/20) */
+}
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--color-text-muted);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+/* Bootstrap floating labels override */
+.form-floating > .form-control {
+    height: calc(3.5rem + 2px); /* Taller floating */
+    line-height: 1.25;
+}
+.form-floating > label {
+    padding: 1rem 1rem;
+    color: var(--color-text-muted);
+}
+
+.btn {
+    min-height: 48px; /* Taller buttons */
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+}
+
+/* * 7. THEME TOGGLE ICON STYLING
+ * (تنسيق أيقونة تبديل المظهر)
+ */
+.btn-ghost {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+}
+.btn-ghost:hover {
+    color: var(--color-primary);
+}
+.icon-dark { display: none; }
+.icon-light { display: block; }
+[data-theme="dark"] .icon-dark { display: block; }
+[data-theme="dark"] .icon-light { display: none; }
