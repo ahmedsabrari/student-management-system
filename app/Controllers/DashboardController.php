@@ -27,22 +27,50 @@ class DashboardController extends Controller
     {
         // Check for user role from the session
         $userRole = Session::get('user_role');
+        
+        // --- DATA FOR LAYOUT ---
+        // --- (بيانات للقالب) ---
+        // Prepare data needed by the main.php layout
+        // (تحضير البيانات المطلوبة للقالب main.php)
+        $data = [
+            'user' => [
+                'full_name' => Session::get('user_name'),
+                'avatar'    => Session::get('user_avatar'), // Assuming you store this on login
+                'role'      => $userRole
+            ],
+            'breadcrumbs' => [
+                ['label' => 'Dashboard', 'url' => null] // No URL, this is the current page
+            ],
+            'activeMenu' => 'dashboard' // Key to highlight the sidebar link
+        ];
 
         switch ($userRole) {
             case 'admin':
-                $data = $this->getAdminDashboardData();
-                return $this->render('dashboard/admin', $data, 'admin');
+                $adminData = $this->getAdminDashboardData();
+                $data = array_merge($data, $adminData);
+                $data['title'] = "Admin Dashboard"; // Page title
+                
+                // FIXED: Use the 'main' layout instead of 'admin'
+                // (تم الإصلاح: استخدام القالب 'main' بدلاً من 'admin')
+                return $this->render('dashboard/admin', $data, 'main'); 
 
             case 'teacher':
-                $data = $this->getTeacherDashboardData();
-                return $this->render('dashboard/teacher', $data, 'admin');
+                $teacherData = $this->getTeacherDashboardData();
+                $data = array_merge($data, $teacherData);
+                $data['title'] = "Teacher Dashboard"; // Page title
+                
+                // FIXED: Use the 'main' layout instead of 'admin'
+                // (تم الإصلاح: استخدام القالب 'main' بدلاً من 'admin')
+                return $this->render('dashboard/teacher', $data, 'main'); 
 
             case 'student':
-                $data = $this->getStudentDashboardData();
-                // --- FIX THIS LINE ---
-                // --- أصلح هذا السطر ---
-                // return $this->render('dashboard/student', $data, 'main'); // WRONG
-                return $this->render('dashboard/index', $data, 'main'); // CORRECT (Use index.php for student dashboard)
+                $studentData = $this->getStudentDashboardData();
+                $data = array_merge($data, $studentData);
+                 $data['title'] = "My Dashboard"; // Page title
+                 
+                // This was already correct, using 'main' layout
+                // (هذا كان صحيحًا بالفعل)
+                return $this->render('dashboard/index', $data, 'main'); 
 
             default:
                 // If no role is found or role is unrecognized, log out and redirect to login
@@ -65,16 +93,17 @@ class DashboardController extends Controller
         $teacherModel = new Teacher();
         $courseModel = new Course();
 
-        // Ensure models have getTable() method
-        // التأكد من أن النماذج تحتوي على دالة getTable()
+        // Ensure models have getTable() method and use soft delete checks
+        // (التأكد من أن النماذج تحتوي على دالة getTable() واستخدام التحقق من الحذف المنطقي)
         $studentCount = $studentModel->query("SELECT COUNT(*) as count FROM {$studentModel->getTable()} WHERE deleted_at IS NULL")->fetch()->count ?? 0;
-        $teacherCount = $teacherModel->query("SELECT COUNT(t.id) as count FROM {$teacherModel->getTable()} t JOIN users u ON t.user_id = u.id WHERE u.deleted_at IS NULL")->fetch()->count ?? 0; // Count based on non-deleted users too
+        $teacherCount = $teacherModel->query("SELECT COUNT(t.id) as count FROM {$teacherModel->getTable()} t JOIN users u ON t.user_id = u.id WHERE u.deleted_at IS NULL AND t.deleted_at IS NULL")->fetch()->count ?? 0;
         $courseCount = $courseModel->query("SELECT COUNT(*) as count FROM {$courseModel->getTable()} WHERE deleted_at IS NULL")->fetch()->count ?? 0;
 
         return [
             'studentCount' => $studentCount,
             'teacherCount' => $teacherCount,
             'courseCount' => $courseCount,
+            // (Pass other admin widgets data here)
         ];
     }
 
@@ -85,10 +114,10 @@ class DashboardController extends Controller
      */
     private function getTeacherDashboardData(): array
     {
-        $teacherId = Session::get('teacher_id'); // Assuming teacher_id is stored in session upon login for teachers
+        $teacherId = Session::get('teacher_id'); // Assuming teacher_id is stored in session
 
         // @TODO: Implement real data fetching logic
-        // تنفيذ منطق جلب البيانات الحقيقي
+        // (تنفيذ منطق جلب البيانات الحقيقي)
         $courses = [
             // Example data
              ['id' => 1, 'name' => 'Introduction to PHP', 'class_count' => 2, 'student_count' => 45],
@@ -107,21 +136,18 @@ class DashboardController extends Controller
      */
     private function getStudentDashboardData(): array
     {
-        $studentId = Session::get('student_id'); // Assuming student_id is stored in session upon login for students
+        $studentId = Session::get('student_id'); // Assuming student_id is stored in session
 
         // @TODO: Implement real data fetching logic using Enrollment model
-        // تنفيذ منطق جلب البيانات الحقيقي باستخدام Enrollment model
+        // (تنفيذ منطق جلب البيانات الحقيقي باستخدام Enrollment model)
          $enrollments = [
             // Example data
             ['course_name' => 'Web Development Fundamentals', 'grade' => 'A', 'attendance' => '95%'],
             ['course_name' => 'Database Design', 'grade' => 'B+', 'attendance' => '92%'],
-            ['course_name' => 'Object-Oriented Programming', 'grade' => 'In Progress', 'attendance' => '98%'],
         ];
 
         return [
             'enrollments' => $enrollments,
         ];
     }
-
-
 }
