@@ -325,3 +325,67 @@ body {
 .icon-light { display: block; }
 [data-theme="dark"] .icon-dark { display: block; }
 [data-theme="dark"] .icon-light { display: none; }
+
+/*
+ * File: public/assets/css/style.css
+ * ... (Keep all existing variables and styles) ...
+ * ... (احتفظ بجميع المتغيرات والتنسيقات الموجودة) ...
+ */
+
+/* * 8. FORM HELPERS (Password Toggle)
+ * (مساعدات النموذج - تبديل كلمة المرور)
+ */
+
+/* * Style for the show/hide password icon button
+ * (تنسيق زر أيقونة إظهار/إخفاء كلمة المرور)
+*/
+.password-toggle-icon {
+  /* Adjust icon color based on theme */
+  color: var(--color-text-muted);
+  border-color: var(--border-color);
+}
+.password-toggle-icon:hover {
+  color: var(--color-text);
+  background-color: var(--bg-light);
+}
+[data-theme="dark"] .password-toggle-icon {
+  border-color: var(--border-color);
+}
+
+/* * Fix border-radius when icon is next to an invalid input
+* (إصلاح حواف الزر عند وجود خطأ في حقل الإدخال)
+*/
+.input-group .form-control.is-invalid + .password-toggle-icon {
+  border-color: var(--bs-danger);
+}
+.input-group:focus-within .password-toggle-icon {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+}
+[data-theme="dark"] .input-group:focus-within .password-toggle-icon {
+  box-shadow: 0 0 0 3px rgba(90, 134, 243, 0.25);
+}
+
+
+/*
+ * File: public/assets/css/style.css
+ * ... (Keep all existing variables and styles) ...
+ * ... (احتفظ بجميع المتغيرات والتنسيقات الموجودة) ...
+ */
+
+/* * 9. PASSWORD STRENGTH METER
+ * (مؤشر قوة كلمة المرور)
+ */
+ .progress-bar {
+  transition: width 0.3s ease;
+}
+.progress-bar.strength-very-weak { background-color: var(--color-danger); }
+.progress-bar.strength-weak { background-color: var(--color-accent); }
+.progress-bar.strength-medium { background-color: var(--bs-info); } /* Use Bootstrap info color */
+.progress-bar.strength-strong { background-color: var(--color-success); }
+
+#password-strength-text { font-size: 0.8rem; }
+#password-strength-text.strength-very-weak { color: var(--color-danger); }
+#password-strength-text.strength-weak { color: var(--color-accent); }
+#password-strength-text.strength-medium { color: var(--bs-info); }
+#password-strength-text.strength-strong { color: var(--color-success); }

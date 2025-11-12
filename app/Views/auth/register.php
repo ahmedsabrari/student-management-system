@@ -1,153 +1,162 @@
 <?php
-/**
- * Registration View (Enhanced Styling)
+/*
+ * File: app/Views/auth/register.php
  *
- * This file contains the HTML form for new user registration with improved styling.
- * It is rendered within the 'auth.php' layout.
+ * This is the registration form content, injected into the layouts/auth.php.
+ * (هذا هو محتوى نموذج التسجيل، يتم حقنه داخل layouts/auth.php)
+ *
+ * Expected variables:
+ * @var array $errors    (Optional) Validation errors (e.g., ['email' => 'Field is required'])
+ * @var array $old_input (Optional) Old form input to repopulate fields (e.g., ['email' => 'test'])
  */
-use function App\Helpers\formOpen;
-use function App\Helpers\formClose;
-use function App\Helpers\formInput;
-use function App\Helpers\formButton;
 
-// Set the title for the layout
-$title = "Register";
+// Set title for the layout (will be picked up by layouts/auth.php)
+// (تحديد العنوان للقالب)
+$title = "Create Your Account";
 
-// Assume $errors and $old_input might be passed from the controller on validation failure
-// افتراض أن $errors و $old_input قد يتم تمريرهما من الـ Controller عند فشل التحقق
+// Get old input and errors, with safe defaults
+// (جلب المدخلات القديمة والأخطاء، مع قيم افتراضية آمنة)
 $errors = $errors ?? [];
 $old_input = $old_input ?? [];
 ?>
 
-<!-- Add custom styles for transitions and animations -->
-<!-- إضافة تنسيقات مخصصة للتأثيرات الانتقالية والرسوم المتحركة -->
-<style>
-    .register-form-container {
-        opacity: 0;
-        animation: fadeIn 0.5s ease-out forwards;
-        animation-delay: 0.1s; /* Slight delay */
-    }
+<form action="/register" method="POST" id="registerForm" class="needs-validation" novalidate>
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    <?= \App\Helpers\CSRF::inputField() // Assumes CSRF helper exists ?>
 
-    .form-floating .form-control {
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
+    <div class="form-floating mb-3">
+        <input 
+            type="text" 
+            class="form-control <?= isset($errors['full_name']) ? 'is-invalid' : '' ?>" 
+            id="full_name" 
+            name="full_name"
+            value="<?= htmlspecialchars($old_input['full_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+            placeholder="Enter your full name" 
+            required 
+            aria-describedby="error-full_name">
+        <label for="full_name">Full Name</label>
+        <?php if (!empty($errors['full_name'])): ?>
+            <div id="error-full_name" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['full_name'][0], ENT_QUOTES, 'UTF-8') // Display first error ?>
+            </div>
+        <?php endif; ?>
+    </div>
     
-    .btn-register {
-        transition: background-color 0.2s ease-out, transform 0.1s ease-out;
-    }
-    .btn-register:hover {
-        background-color: #0d6efd; /* Slightly darker shade */
-        transform: translateY(-2px);
-    }
-     .btn-register:active {
-         transform: translateY(0px);
-    }
-
-    /* Style for validation errors (to be shown by JS/PHP) */
-    .invalid-feedback {
-        display: none; /* Hide by default */
-        width: 100%;
-        margin-top: .25rem;
-        font-size: .875em;
-        color: #dc3545; /* Bootstrap danger color */
-    }
-    .form-control.is-invalid ~ .invalid-feedback,
-    .form-select.is-invalid ~ .invalid-feedback {
-         display: block; /* Show when is-invalid class is added */
-    }
-</style>
-
-<div class="register-form-container">
-    <?= formOpen('/register', 'POST', ['id' => 'registerForm', 'novalidate' => true, 'class' => 'needs-validation']) ?>
-
-        <!-- Full Name Input -->
-        <div class="form-floating mb-3">
-             <?= formInput('full_name', $old_input['full_name'] ?? '', 'text', [
-                'id' => 'full_name',
-                'class' => 'form-control' . (isset($errors['full_name']) ? ' is-invalid' : ''),
-                'placeholder' => 'Enter your full name',
-                'required' => true
-            ]) ?>
-            <label for="full_name">Full Name</label>
-            <div class="invalid-feedback">
-                <?= htmlspecialchars($errors['full_name'][0] ?? 'Please enter your full name.') ?>
+    <div class="form-floating mb-3">
+        <input 
+            type="text" 
+            class="form-control <?= isset($errors['username']) ? 'is-invalid' : '' ?>" 
+            id="username" 
+            name="username"
+            value="<?= htmlspecialchars($old_input['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+            placeholder="Choose a username" 
+            required 
+            aria-describedby="error-username">
+        <label for="username">Username</label>
+        <?php if (!empty($errors['username'])): ?>
+            <div id="error-username" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['username'][0], ENT_QUOTES, 'UTF-8') ?>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
 
-        <!-- Username Input -->
-        <div class="form-floating mb-3">
-             <?= formInput('username', $old_input['username'] ?? '', 'text', [
-                'id' => 'username',
-                'class' => 'form-control' . (isset($errors['username']) ? ' is-invalid' : ''),
-                'placeholder' => 'Choose a username',
-                'required' => true
-            ]) ?>
-            <label for="username">Username</label>
-            <div class="invalid-feedback">
-                 <?= htmlspecialchars($errors['username'][0] ?? 'Please choose a username.') ?>
+    <div class="form-floating mb-3">
+        <input 
+            type="email" 
+            class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" 
+            id="email" 
+            name="email"
+            value="<?= htmlspecialchars($old_input['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+            placeholder="Enter your email" 
+            required 
+            aria-describedby="error-email">
+        <label for="email">Email Address</label>
+        <?php if (!empty($errors['email'])): ?>
+            <div id="error-email" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['email'][0], ENT_QUOTES, 'UTF-8') ?>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
 
-        <!-- Email Address Input -->
-        <div class="form-floating mb-3">
-             <?= formInput('email', $old_input['email'] ?? '', 'email', [
-                'id' => 'email',
-                'class' => 'form-control' . (isset($errors['email']) ? ' is-invalid' : ''),
-                'placeholder' => 'Enter your email',
-                'required' => true
-            ]) ?>
-            <label for="email">Email Address</label>
-            <div class="invalid-feedback">
-                 <?= htmlspecialchars($errors['email'][0] ?? 'Please enter a valid email address.') ?>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group has-validation">
+            <input 
+                type="password" 
+                class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" 
+                id="password" 
+                name="password" 
+                placeholder="Create a strong password" 
+                required 
+                aria-describedby="error-password password-strength-meter">
+            <button class="btn btn-outline-secondary password-toggle-icon" type="button" id="togglePassword" aria-label="Show password">
+                <i class="bi bi-eye-slash"></i>
+            </button>
+        </div>
+        <div id="password-strength-meter" class="progress mt-2" style="height: 5px;">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small id="password-strength-text" class="form-text"></small>
+        <?php if (!empty($errors['password'])): ?>
+            <div id="error-password" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['password'][0], ENT_QUOTES, 'UTF-8') ?>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
 
-        <!-- Password Input -->
-        <div class="form-floating mb-3">
-             <?= formInput('password', '', 'password', [
-                'id' => 'password',
-                'class' => 'form-control' . (isset($errors['password']) ? ' is-invalid' : ''),
-                'placeholder' => 'Create a password',
-                'required' => true
-            ]) ?>
-            <label for="password">Password</label>
-             <div class="invalid-feedback">
-                 <?= htmlspecialchars($errors['password'][0] ?? 'Please create a password.') ?>
+    <div class="mb-3">
+        <label for="password_confirmation" class="form-label">Confirm Password</label>
+        <div class="input-group has-validation">
+            <input 
+                type="password" 
+                class="form-control <?= isset($errors['password_confirmation']) ? 'is-invalid' : '' ?>" 
+                id="password_confirmation" 
+                name="password_confirmation" 
+                placeholder="Confirm your password" 
+                required 
+                aria-describedby="error-password-confirm">
+            <button class="btn btn-outline-secondary password-toggle-icon" type="button" id="togglePasswordConfirm" aria-label="Show password">
+                <i class="bi bi-eye-slash"></i>
+            </button>
+        </div>
+        <?php if (!empty($errors['password_confirmation'])): ?>
+            <div id="error-password-confirm" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['password_confirmation'][0], ENT_QUOTES, 'UTF-8') ?>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
 
-        <!-- Confirm Password Input -->
-        <div class="form-floating mb-4">
-            <?= formInput('password_confirm', '', 'password', [
-                'id' => 'password_confirm',
-                'class' => 'form-control' . (isset($errors['password_confirm']) ? ' is-invalid' : ''),
-                'placeholder' => 'Confirm your password',
-                'required' => true
-            ]) ?>
-            <label for="password_confirm">Confirm Password</label>
-            <div class="invalid-feedback">
-                <?= htmlspecialchars($errors['password_confirm'][0] ?? 'Please confirm your password.') ?>
+    <div class="form-check mb-4">
+        <input 
+            class="form-check-input <?= isset($errors['accept_terms']) ? 'is-invalid' : '' ?>" 
+            type="checkbox" 
+            value="1" 
+            id="accept_terms" 
+            name="accept_terms" 
+            required
+            aria-describedby="error-terms">
+        <label class="form-check-label" for="accept_terms">
+            I agree to the <a href="/terms-of-service" target="_blank" class="text-decoration-none">Terms & Conditions</a>
+        </label>
+        <?php if (!empty($errors['accept_terms'])): ?>
+            <div id="error-terms" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['accept_terms'][0], ENT_QUOTES, 'UTF-8') ?>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
 
-        <!-- Submit Button -->
-        <?= formButton('Register', ['class' => 'btn btn-primary w-100 btn-lg btn-register']) ?>
+    <button type="submit" class="btn btn-primary w-100" aria-label="Create account">
+        Create Account
+    </button>
+    
+    <div class="text-center mt-4">
+        <p class="text-muted">
+            Already have an account? 
+            <a href="/login" class="text-decoration-none">Login here</a>
+        </p>
+    </div>
 
-        <!-- Link back to Login Page -->
-        <div class="text-center mt-4">
-            <p class="text-muted">Already have an account? <a href="/login" class="text-decoration-none">Login here</a></p>
-        </div>
-
-    <?= formClose() ?>
-</div>
-
-<!-- Bootstrap client-side validation script (optional but recommended) -->
-<!-- سكريبت التحقق من جانب العميل الخاص بـ Bootstrap (اختياري لكن موصى به) -->
+</form>
 <script>
     (function () {
       'use strict'

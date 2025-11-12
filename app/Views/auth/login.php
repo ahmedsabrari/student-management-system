@@ -1,138 +1,112 @@
 <?php
-/**
- * Login View (Enhanced Styling)
+/*
+ * File: app/Views/auth/login.php
  *
- * This file contains the HTML form for user login with improved styling.
- * It is rendered within the 'auth.php' layout.
+ * This is the login form content, injected into the layouts/auth.php.
+ * (هذا هو محتوى نموذج تسجيل الدخول، يتم حقنه داخل layouts/auth.php)
+ *
+ * Expected variables:
+ * @var array $errors    (Optional) Validation errors (e.g., ['email_or_username' => 'Field is required'])
+ * @var array $old_input (Optional) Old form input to repopulate fields (e.g., ['email_or_username' => 'test'])
  */
-use function App\Helpers\formInput; // Using form helper for consistency
-use function App\Helpers\formButton;
-use function App\Helpers\formOpen;
-use function App\Helpers\formClose;
 
-// Set the title for the layout
-$title = "Login";
+// Set title for the layout (will be picked up by layouts/auth.php)
+// (تحديد العنوان للقالب)
+$title = "Login to your Account";
+
+// Get old input and errors, with safe defaults
+// (جلب المدخلات القديمة والأخطاء، مع قيم افتراضية آمنة)
+$errors = $errors ?? [];
+$old_input = $old_input ?? [];
 ?>
 
-<!-- Add custom styles for transitions and animations -->
-<!-- إضافة تنسيقات مخصصة للتأثيرات الانتقالية والرسوم المتحركة -->
-<style>
-    .login-form-container {
-        opacity: 0;
-        animation: fadeIn 0.5s ease-out forwards;
-        animation-delay: 0.1s; /* Slight delay */
-    }
+<!-- 
+  START: Login Form
+  (بداية نموذج تسجيل الدخول)
+-->
+<form action="/login" method="POST" id="loginForm" class="needs-validation" novalidate>
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    <!-- CSRF Token (Security) -->
+    <!-- (رمز الحماية من هجمات CSRF) -->
+    <?= \App\Helpers\CSRF::inputField() // Assumes CSRF helper exists ?>
 
-    .form-floating .form-control {
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    
-    .btn-login {
-        transition: background-color 0.2s ease-out, transform 0.1s ease-out;
-    }
-    .btn-login:hover {
-        background-color: #0b5ed7; /* Darker blue */
-        transform: translateY(-2px);
-    }
-    .btn-login:active {
-         transform: translateY(0px);
-    }
-    
-    /* Style for validation errors (to be shown by JS/PHP) */
-    .invalid-feedback {
-        display: none; /* Hide by default */
-        width: 100%;
-        margin-top: .25rem;
-        font-size: .875em;
-        color: #dc3545; /* Bootstrap danger color */
-    }
-    .form-control.is-invalid ~ .invalid-feedback,
-    .form-select.is-invalid ~ .invalid-feedback {
-         display: block; /* Show when is-invalid class is added */
-    }
-
-</style>
-
-<div class="login-form-container">
-    <?= formOpen('/login', 'POST', ['id' => 'loginForm', 'novalidate' => true, 'class' => 'needs-validation']) ?>
-    
-        <!-- Email Address Input with Floating Label -->
-        <!-- حقل البريد الإلكتروني مع تسمية عائمة -->
-        <div class="form-floating mb-3">
-            <?= formInput('email', $old_input['email'] ?? '', 'email', [
-                'id' => 'email',
-                'class' => 'form-control' . (isset($errors['email']) ? ' is-invalid' : ''), // Add is-invalid if error exists
-                'placeholder' => 'Enter your email', 
-                'required' => true
-            ]) ?>
-            <label for="email">Email Address</label>
-            <!-- Placeholder for server-side validation error -->
-            <!-- مكان لرسالة خطأ التحقق من جانب الخادم -->
-            <div class="invalid-feedback">
-                <?= htmlspecialchars($errors['email'][0] ?? 'Please enter a valid email.') ?>
+    <!-- Email or Username Field -->
+    <!-- (حقل البريد الإلكتروني أو اسم المستخدم) -->
+    <div class="mb-3">
+        <label for="email_or_username" class="form-label">Email or Username</label>
+        <input 
+            type="text" 
+            class="form-control <?= isset($errors['email_or_username']) ? 'is-invalid' : '' ?>" 
+            id="email_or_username" 
+            name="email_or_username"
+            value="<?= htmlspecialchars($old_input['email_or_username'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+            required
+            aria-describedby="error-email"
+        >
+        <!-- Validation Error -->
+        <?php if (!empty($errors['email_or_username'])): ?>
+            <div id="error-email" class="invalid-feedback d-block">
+                <?= htmlspecialchars($errors['email_or_username'][0], ENT_QUOTES, 'UTF-8') // Display first error ?>
             </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Password Field -->
+    <!-- (حقل كلمة المرور) -->
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group has-validation">
+            <input 
+                type="password" 
+                class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" 
+                id="password" 
+                name="password" 
+                required
+                aria-describedby="error-password"
+            >
+            <!-- Show/Hide Password Toggle -->
+            <!-- (زر إظهار/إخفاء كلمة المرور) -->
+            <button class="btn btn-outline-secondary password-toggle-icon" type="button" id="togglePassword" aria-label="Show password">
+                <i class="bi bi-eye-slash"></i>
+            </button>
+            <?php if (!empty($errors['password'])): ?>
+                <div id="error-password" class="invalid-feedback d-block">
+                    <?= htmlspecialchars($errors['password'][0], ENT_QUOTES, 'UTF-8') ?>
+                </div>
+            <?php endif; ?>
         </div>
+    </div>
 
-        <!-- Password Input with Floating Label -->
-        <!-- حقل كلمة المرور مع تسمية عائمة -->
-        <div class="form-floating mb-3">
-             <?= formInput('password', '', 'password', [
-                'id' => 'password',
-                'class' => 'form-control' . (isset($errors['password']) ? ' is-invalid' : ''),
-                'placeholder' => 'Enter your password', 
-                'required' => true
-            ]) ?>
-            <label for="password">Password</label>
-             <!-- Placeholder for server-side validation error -->
-            <div class="invalid-feedback">
-                 <?= htmlspecialchars($errors['password'][0] ?? 'Password is required.') ?>
-            </div>
+    <!-- Remember Me & Forgot Password -->
+    <!-- (تذكرني ونسيت كلمة المرور) -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="remember" id="remember">
+            <label class="form-check-label" for="remember">
+                Remember me
+            </label>
         </div>
-        
-        <!-- Remember Me & Forgot Password -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                <label class="form-check-label" for="remember">
-                    Remember Me
-                </label>
-            </div>
-            <!-- <a href="/forgot-password" class="small text-decoration-none">Forgot Password?</a> -->
-        </div>
+        <a href="/password/forgot" class="small text-decoration-none">Forgot password?</a>
+    </div>
 
-        <!-- Submit Button with custom class -->
-        <!-- زر الإرسال مع كلاس مخصص -->
-         <?= formButton('Login', ['class' => 'btn btn-primary w-100 btn-lg btn-login']) ?>
+    <!-- Submit Button (Handles loading state via app.js) -->
+    <!-- (زر الإرسال - يعالج حالة التحميل عبر app.js) -->
+    <button type="submit" class="btn btn-primary w-100" aria-label="Log in">
+        Login
+    </button>
 
-        <!-- Link to Registration Page -->
-        <!-- رابط لصفحة التسجيل -->
-        <div class="text-center mt-4">
-            <p class="text-muted">Don't have an account? <a href="/register" class="text-decoration-none">Register here</a></p>
-        </div>
+    <!-- Social Login Placeholder (Optional) -->
+    <!-- (مكان تسجيل الدخول الاجتماعي - اختياري) -->
+    <?php /* include __DIR__ . '/../partials/auth/_social_buttons.php'; */ ?>
+    
+    <!-- Link to Registration -->
+    <!-- (رابط لصفحة التسجيل) -->
+    <div class="text-center mt-4">
+        <p class="text-muted">
+            Don't have an account? 
+            <a href="/register" class="text-decoration-none">Create an account</a>
+        </p>
+    </div>
 
-    <?= formClose() ?>
-</div>
-
-<!-- Bootstrap client-side validation script (optional but recommended) -->
-<!-- سكريبت التحقق من جانب العميل الخاص بـ Bootstrap (اختياري لكن موصى به) -->
-<script>
-    (function () {
-      'use strict'
-      var forms = document.querySelectorAll('.needs-validation')
-      Array.prototype.slice.call(forms)
-        .forEach(function (form) {
-          form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-              event.preventDefault()
-              event.stopPropagation()
-            }
-            form.classList.add('was-validated')
-          }, false)
-        })
-    })()
-</script>
+</form>
+<!-- END: Login Form -->
